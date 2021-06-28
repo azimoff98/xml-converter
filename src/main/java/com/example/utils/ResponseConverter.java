@@ -6,7 +6,7 @@ import com.example.models.MethodResponse;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class DiamondResponseConverter {
+public class ResponseConverter {
 
 //    public static final Set<DiamondResponseMemberEnum> responseMembers;
 

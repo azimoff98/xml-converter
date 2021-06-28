@@ -1,7 +1,7 @@
 package com.example;
 
 import com.example.models.MethodResponse;
-import com.example.utils.DiamondResponseConverter;
+import com.example.utils.ResponseConverter;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.SneakyThrows;
@@ -28,7 +28,7 @@ public class XmlConverterTest {
     public void testFailResponse(){
         MethodResponse methodResponse = xmlMapper.readValue(DiamondResponses.FAIL_RESPONSE, MethodResponse.class);
         System.out.println(methodResponse);
-        DiamondResponseConverter.responseMap(methodResponse);
+        ResponseConverter.responseMap(methodResponse);
     }
 
     @SneakyThrows
@@ -36,7 +36,7 @@ public class XmlConverterTest {
     public void testResponse102(){
         MethodResponse methodResponse = xmlMapper.readValue(DiamondResponses.RESPONSE_102, MethodResponse.class);
         System.out.println(methodResponse);
-        DiamondResponseConverter.responseMap(methodResponse);
+        ResponseConverter.responseMap(methodResponse);
     }
 
     @SneakyThrows
@@ -46,7 +46,7 @@ public class XmlConverterTest {
         MethodResponse methodResponse = xmlMapper.readValue(DiamondResponses.SUCCESS_RESPONSE, MethodResponse.class);
         System.out.println(methodResponse);
 
-        DiamondResponseConverter.responseMap(methodResponse);
+        ResponseConverter.responseMap(methodResponse);
     }
 
 }
