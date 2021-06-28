@@ -1,75 +1,72 @@
 package com.example.utils;
 
 import com.example.models.Acip5RawResponse;
+import com.example.models.Acip5RawResponse.Member;
+import com.example.models.Acip5RawResponse.Struct;
+import com.example.models.Acip5RawResponse.Value;
 import com.example.models.MethodResponse;
-
+import com.google.common.collect.ImmutableMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ResponseConverter {
 
-//    public static final Set<DiamondResponseMemberEnum> responseMembers;
+  private static Map<String, String> values = new LinkedHashMap<>();
 
-    private static Map<String, String> values = new LinkedHashMap<>();
+  private static final Map<String, String> REQUEST_RESPONSE_RELATIONS =
+      ImmutableMap.<String, String>builder()
+          .put("dedicatedAccountID", "dedicatedAccountActiveValue1")
+          .build();
 
-//    static {
-//        responseMembers = new LinkedHashSet<>(Arrays.asList(DiamondResponseMemberEnum.values()));
-//    }
+  public static Map<String, String> responseMap(MethodResponse methodResponse) {
 
-    public static Map<String, String> responseMap(MethodResponse methodResponse) {
+    if (methodResponse.getAcip5RawResponse() != null) {
+      Acip5RawResponse acip5RawResponse = methodResponse.getAcip5RawResponse();
+      Struct struct = acip5RawResponse
+          .getParams()
+          .getParam()
+          .getValue()
+          .getStruct();
 
-//        Map<DiamondResponseMemberEnum, Map<String, String>> responseMap = new LinkedHashMap<>();
+      for (Member member : struct.getMembers()) {
+        System.out.println(processMember(member));
+      }
+    }
 
+    return null;
+  }
 
-        if (methodResponse.getAcip5RawResponse() != null) {
-            Acip5RawResponse acip5RawResponse = methodResponse.getAcip5RawResponse();
-            acip5RawResponse
-                    .getParams()
-                    .getParam()
-                    .getValue()
-                    .getStruct()
-                    .getMember()
-                    .forEach(m -> System.out.println(processMember(m)));
+  private static String processMember(Member member) {
+    String memberName = member.getName();
+    String response = processValue(member.getValue());
+    values.put(memberName, response);
+    return memberName + " : " + response;
+  }
 
-
-            System.out.println("ValuesMap : " + values);
+  private static String processValue(Value value) {
+    if (value.getString() != null) {
+      return value.getString();
+    } else if (value.getDateTime() != null) {
+      return value.getDateTime();
+    } else if (value.getI4() != null) {
+      return value.getI4();
+    } else if (value.getArray() != null) {
+      for (Value val : value.getArray().getData().getValues()) {
+        String res = processValue(val);
+        if (res != null) {
+          return res;
         }
-
+      }
+      return null;
+    } else {
+      for (Member member : value.getStruct().getMembers()) {
+        String res = processMember(member);
+        if (res != null) {
+          return res;
+        }
         return null;
+      }
+      return null;
     }
-
-    private static String processMember(Acip5RawResponse.Member member) {
-        String memberName = member.getName();
-        String response = processValue(member.getValue());
-        values.put(memberName, response);
-        return memberName + " : " + response;
-    }
-
-    private static String processValue(Acip5RawResponse.Value value) {
-        if (value.getString() != null) {
-            return value.getString();
-        }
-        if (value.getDateTime() != null) {
-            return value.getDateTime();
-        }
-        if (value.getI4() != null) {
-            return value.getI4();
-        }
-        if (value.getArray() != null) {
-            value.getArray().getData().getValue().forEach(v -> {
-                if (v.getArray() != null) {
-                    String innerResponse = processValue(v);
-                    System.out.println("Inner response value: " + innerResponse);
-                }
-                if (v.getStruct() != null) {
-                    v.getStruct().getMember().forEach(m -> {
-                        String innerResponse = processMember(m);
-                        System.out.println("Inner response member value: " + innerResponse);
-                    });
-                }
-            });
-        }
-
-        return null;
-    }
+  }
 }

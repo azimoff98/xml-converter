@@ -44,7 +44,7 @@ public class Acip5RawResponse {
     @ToString
     public static class Struct {
         @JsonProperty("member")
-        private List<Member> member;
+        private List<Member> members;
     }
 
     @AllArgsConstructor
@@ -70,7 +70,7 @@ public class Acip5RawResponse {
     @ToString
     public static class Data {
         @JsonProperty("value")
-        private List<Value> value;
+        private List<Value> values;
     }
 
     @AllArgsConstructor
