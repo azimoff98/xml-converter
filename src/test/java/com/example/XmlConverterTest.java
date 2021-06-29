@@ -1,10 +1,12 @@
 package com.example;
 
 import com.example.models.MethodResponse;
+import com.example.models.RequestType;
 import com.example.utils.ResponseConverter;
 import com.example.utils.ResponseConverterV2;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import java.util.Optional;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,17 +15,17 @@ import org.junit.jupiter.api.Test;
 public class XmlConverterTest {
 
 
-    XmlMapper xmlMapper;
+  XmlMapper xmlMapper;
 
 
-    @BeforeEach
-    public void setUp(){
-        JacksonXmlModule module = new JacksonXmlModule();
-        module.setDefaultUseWrapper(false);
-        xmlMapper = new XmlMapper(module);
-    }
+  @BeforeEach
+  public void setUp() {
+    JacksonXmlModule module = new JacksonXmlModule();
+    module.setDefaultUseWrapper(false);
+    xmlMapper = new XmlMapper(module);
+  }
 
-//    @SneakyThrows
+  //    @SneakyThrows
 //    @Test
 //    public void testFailResponse(){
 //        MethodResponse methodResponse = xmlMapper.readValue(DiamondResponses.FAIL_RESPONSE, MethodResponse.class);
@@ -39,14 +41,17 @@ public class XmlConverterTest {
 //        ResponseConverter.responseMap(methodResponse);
 //    }
 //
-    @SneakyThrows
-    @Test
-    public void testSuccess(){
+  @SneakyThrows
+  @Test
+  public void testSuccess() {
 
-        MethodResponse methodResponse = xmlMapper.readValue(DiamondResponses.SUCCESS_RESPONSE, MethodResponse.class);
-        System.out.println(methodResponse);
+    MethodResponse methodResponse =
+        xmlMapper.readValue(DiamondResponses.SUCCESS_RESPONSE, MethodResponse.class);
+    System.out.println(methodResponse);
 
-        ResponseConverterV2.responseMap(methodResponse);
-    }
+    Optional<String> s =
+        ResponseConverterV2.responseMap(methodResponse, 128, RequestType.DEDICATED_ACCOUNT_ID);
+    System.out.println(s.get());
+  }
 
 }
