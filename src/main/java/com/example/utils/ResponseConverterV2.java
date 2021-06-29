@@ -5,11 +5,16 @@ import com.example.models.Acip5RawResponse.Member;
 import com.example.models.Acip5RawResponse.Struct;
 import com.example.models.Acip5RawResponse.Value;
 import com.example.models.MethodResponse;
+import com.example.models.tree.MemberNode;
+import com.example.models.tree.ValueNode;
 import com.google.common.collect.ImmutableMap;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-public class ResponseConverter {
+public class ResponseConverterV2 {
 
   private static Map<String, String> values = new LinkedHashMap<>();
 
@@ -36,30 +41,32 @@ public class ResponseConverter {
     return null;
   }
 
-  private static String processMember(Member member) {
-    String response = processValue(member.getValue());
-    return String.format("MemberName: %s - value(s): %s", member.getName(), response);
+  private static MemberNode processMember(Member member) {
+    MemberNode memberNode = new MemberNode();
+    List<MemberNode> valueNodes = processValue(member.getValue());
+    memberNode.setMemberName(member.getName());
+    memberNode.setValues(valueNodes);
+    return memberNode;
   }
 
-  private static String processValue(Value value) {
+  private static List<MemberNode> processValue(Value value) {
     if (value.getString() != null) {
-      return value.getString();
+      return Collections.singletonList(new ValueNode(value.getString()));
     } else if (value.getDateTime() != null) {
-      return value.getDateTime();
+      return Collections.singletonList(new ValueNode(value.getDateTime()));
     } else if (value.getI4() != null) {
-      return value.getI4();
+      return Collections.singletonList(new ValueNode(value.getI4()));
     } else if (value.getArray() != null) {
-      StringBuilder valueBuffer = new StringBuilder();
-      for (Value val : value.getArray().getData().getValues()) {
-        valueBuffer.append(processValue(val)).append(", ");
-      }
-      return valueBuffer.substring(0, valueBuffer.length() - 2);
+      return value.getArray().getData().getValues()
+          .stream()
+          .map(ResponseConverterV2::processValue)
+          .flatMap(List::stream)
+          .collect(Collectors.toList());
     } else {
-      StringBuilder valueBuffer = new StringBuilder();
-      for (Member member : value.getStruct().getMembers()) {
-        valueBuffer.append(processMember(member)).append(", ");
-      }
-      return valueBuffer.substring(0, valueBuffer.length() - 2);
+      return value.getStruct().getMembers()
+          .stream()
+          .map(ResponseConverterV2::processMember)
+          .collect(Collectors.toList());
     }
   }
 }

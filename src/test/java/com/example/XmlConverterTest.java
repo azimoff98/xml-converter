@@ -2,6 +2,7 @@ package com.example;
 
 import com.example.models.MethodResponse;
 import com.example.utils.ResponseConverter;
+import com.example.utils.ResponseConverterV2;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.SneakyThrows;
@@ -45,7 +46,7 @@ public class XmlConverterTest {
         MethodResponse methodResponse = xmlMapper.readValue(DiamondResponses.SUCCESS_RESPONSE, MethodResponse.class);
         System.out.println(methodResponse);
 
-        ResponseConverter.responseMap(methodResponse);
+        ResponseConverterV2.responseMap(methodResponse);
     }
 
 }
